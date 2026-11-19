@@ -1,0 +1,8 @@
+# Streamlit theme: Helvetas-style colours
+[theme]
+base = "light"
+primaryColor = "#E2001A"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F4F1EC"
+textColor = "#3C3C3B"
+font = "sans serif"

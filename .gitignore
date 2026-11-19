@@ -1,0 +1,5 @@
+# never upload the API token
+.streamlit/secrets.toml
+__pycache__/
+*.csv
+*.xlsx
