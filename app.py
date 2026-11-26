@@ -427,13 +427,24 @@ with tabs["Fieldwork progress"]:
     # --- row 3: map
     pts = hh.dropna(subset=["Q026_lat", "Q026_lon"])
     if len(pts):
-        fig = px.scatter_map(pts, lat="Q026_lat", lon="Q026_lon", zoom=6, height=520,
+        base = st.segmented_control("Map view", ["Street", "Satellite"], default="Street",
+                                    key="map_view_field")
+        zoom = 13 if pts["Q007"].nunique() == 1 else (10 if pts["Q004"].nunique() == 1 else 7)
+        fig = px.scatter_map(pts, lat="Q026_lat", lon="Q026_lon", zoom=zoom, height=520,
+                             center=dict(lat=pts["Q026_lat"].mean(), lon=pts["Q026_lon"].mean()),
                              hover_name="Q007_lbl", hover_data={"Q004_lbl": True, "enum_name_lbl": True,
                                                                "Q026_lat": False, "Q026_lon": False},
                              labels={"Q004_lbl": "Woreda", "enum_name_lbl": "Enumerator"},
                              color_discrete_sequence=[RED], title="Interview locations")
         fig.update_traces(marker=dict(size=9, opacity=0.8))
-        fig.update_layout(map_style="carto-positron", margin=dict(l=0, r=0, t=50, b=0))
+        if base == "Satellite":   # Esri World Imagery satellite tiles
+            fig.update_layout(map_style="white-bg", map_layers=[dict(
+                below="traces", sourcetype="raster", sourceattribution="Esri, Maxar, Earthstar Geographics",
+                source=["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"])])
+            fig.update_traces(marker=dict(size=11, opacity=0.95))
+        else:
+            fig.update_layout(map_style="carto-positron")
+        fig.update_layout(margin=dict(l=0, r=0, t=50, b=0))
         st.plotly_chart(fig, width="stretch")
 
 # ---------------------------------------------------------------- household profile
